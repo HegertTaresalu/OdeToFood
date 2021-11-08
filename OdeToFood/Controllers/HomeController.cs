@@ -27,6 +27,16 @@ namespace OdeToFood.Controllers
         {
             return View();
         }
+        public IActionResult About()
+        {
+            var Model = new AboutModel()
+            {
+                Name = "Hegert Taresalu",
+                Location = "Tallinn"
+
+            };
+            return View(Model);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
