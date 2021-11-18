@@ -1,7 +1,14 @@
 ﻿@model IEnumerable<OdeToFood.Models.RestaurantReview>
 
 @{ ViewData["Title"] = "Reviews"; }
+
+@section featured{
+    we are showing latest reviews
+
+}
 <h1>Reviews</h1>
+
+
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,5 +20,9 @@
     <h4>@item.Name</h4>
     <span>@item.Rating</span>
     <p>@item.City, @item.Country</p>
-</div>}
+    <span class="right">
+        @Html.ActionLink("Edit", "Edit", new {id = item.Id })
+    </span>
+</div>
+}
 
