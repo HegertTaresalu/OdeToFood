@@ -40,6 +40,7 @@ namespace OdeToFood
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			SetupAppData(app, env);
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -71,5 +72,41 @@ namespace OdeToFood
 				endpoints.MapRazorPages();
 			});
 		}
-	}
+
+        private void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+			using var serviceScope = app.ApplicationServices.
+				GetRequiredService<IServiceScopeFactory>()
+				.CreateScope();
+			using var context = serviceScope
+				.ServiceProvider
+				.GetService<ApplicationDbContext>();
+            if (context == null)
+            {
+				throw new ApplicationException("Problem in services can not initialize ApplicationDbContext");
+            }
+			while (true)
+			{
+
+
+				{
+					try
+					{
+						context.Database.OpenConnection();
+						context.Database.CloseConnection();
+						break;
+					}
+					catch (Exception e)
+					{
+
+                        if (e.Message.Contains("the login failed.")) { break; }
+                        {
+							System.Threading.Thread.Sleep(1000);
+                        }
+					}
+				}
+			}
+			AppDataInit.SeedRestaurant(context);
+        }
+    }
 }
