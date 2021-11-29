@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace OdeToFood
 {
 	public class Startup
@@ -21,22 +21,18 @@ namespace OdeToFood
 		{
 			Configuration = configuration;
 		}
-
 		public IConfiguration Configuration { get; }
-
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>
 							options.UseSqlServer(
-											Configuration.GetConnectionString("DefaultConnection")));
+											Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
 			services.AddDatabaseDeveloperPageExceptionFilter();
-
 			services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
 							.AddEntityFrameworkStores<ApplicationDbContext>();
 			services.AddControllersWithViews();
 		}
-
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
@@ -54,17 +50,14 @@ namespace OdeToFood
 			}
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
-
 			app.UseRouting();
-
 			app.UseAuthentication();
 			app.UseAuthorization();
-
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute(
-									"Cuisine","cuisine/{name?}",
-									new { controller = "Cuisine", action="Search" }
+									"Cuisine", "cuisine/{name?}",
+									new { controller = "Cuisine", action = "Search" }
 				);
 				endpoints.MapControllerRoute(
 																	name: "default",
@@ -73,40 +66,34 @@ namespace OdeToFood
 			});
 		}
 
-        private void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-			using var serviceScope = app.ApplicationServices.
-				GetRequiredService<IServiceScopeFactory>()
+		private void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env)
+		{
+			using var serviceScope = app
+				.ApplicationServices
+				.GetRequiredService<IServiceScopeFactory>()
 				.CreateScope();
 			using var context = serviceScope
 				.ServiceProvider
 				.GetService<ApplicationDbContext>();
-            if (context == null)
-            {
-				throw new ApplicationException("Problem in services can not initialize ApplicationDbContext");
-            }
+			if (context == null)
+			{
+				throw new ApplicationException("Problem in services. Can not initialize ApplicationDbContext");
+			}
 			while (true)
 			{
-
-
+				try
 				{
-					try
-					{
-						context.Database.OpenConnection();
-						context.Database.CloseConnection();
-						break;
-					}
-					catch (Exception e)
-					{
-
-                        if (e.Message.Contains("the login failed.")) { break; }
-                        {
-							System.Threading.Thread.Sleep(1000);
-                        }
-					}
+					context.Database.OpenConnection();
+					context.Database.CloseConnection();
+					break;
+				}
+				catch (SqlException e)
+				{
+					if (e.Message.Contains("The login failed.")) { break; }
+					System.Threading.Thread.Sleep(1000);
 				}
 			}
 			AppDataInit.SeedRestaurant(context);
-        }
-    }
+		}
+	}
 }

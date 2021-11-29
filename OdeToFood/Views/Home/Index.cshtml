@@ -2,13 +2,15 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-@*
+
 @foreach (var item in Model)
 {
-    <div>
-        <h4>@item.Name</h4>
-        <h4>@item.City, @item.Country</h4>
-        <hr />
+<div>
+    <h4>@item.Name</h4>
+    
+    <div>@item.City, @item.Country</div>
+
+    
+    <hr />
     </div>
 }
-    *@
