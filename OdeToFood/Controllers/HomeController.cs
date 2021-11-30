@@ -21,24 +21,13 @@ namespace OdeToFood.Controllers
             _context = context;
         }
 
-		public IActionResult Index()
+		public IActionResult Index(string searchTerm = null)
 		{
 
-			//var model =
-			//	from r in _context.Restaurants
-			//	orderby r.Reviews.Average(review => review.Rating) descending
-			//	select new RestaurantListViewModel	
-			//	{
-			//		Id = r.Id,
-			//		Name = r.Name,
-			//		Country = r.Country,
-			//		City = r.City,
-			//		CountOfReviews = r.Reviews.Count()
-		
-			//	};	
 			var model = _context.Restaurants
 				.OrderByDescending(r=>r.Reviews.Average(review => review.Rating)
 				)
+				.Where(r=>searchTerm==null || r.Name.StartsWith(searchTerm))
 				.Select(r => new RestaurantListViewModel
                 {
                     Id = r.Id,
