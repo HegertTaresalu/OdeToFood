@@ -1,22 +1,15 @@
-﻿@model IEnumerable<OdeToFood.Models.RestaurantReview>
-
-@{ ViewData["Title"] = "Reviews"; }
-
-@section featured{
-    We are showing the latest and greatest reviews
-
+﻿@model IEnumerable<OdeToFood.Models.Restaurant>
+@{
+    ViewData["Title"] = "Index";
 }
-<h1>Reviews</h1>
 
+<h1>Reviews for Restaurant @Model.Name</h1>
+
+
+<partial name="_Reviews" model="@Model.Reviews"></partial>
 
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 
-@foreach (var item in Model)
-{
-    <partial name="_review" model="item" />
-
-}
-        

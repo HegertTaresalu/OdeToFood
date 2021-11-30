@@ -86,7 +86,7 @@ namespace OdeToFood.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,City,Country,Rating")] Restaurant restaurant)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,City,Country")] Restaurant restaurant)
         {
             if (id != restaurant.Id)
             {
