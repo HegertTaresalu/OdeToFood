@@ -1,15 +1,15 @@
-﻿@model IEnumerable<OdeToFood.Models.Restaurant>
+﻿@model OdeToFood.Models.Restaurant
+
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Reviews for Restaurant @Model.Name</h1>
+<h1>Reviews for restaurant @Model.Name</h1>
 
-
-<partial name="_Reviews" model="@Model.Reviews"></partial>
-
+<partial name="_Reviews" model="@Model.Reviews" />
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
 

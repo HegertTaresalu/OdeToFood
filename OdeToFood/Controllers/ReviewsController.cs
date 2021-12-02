@@ -20,7 +20,8 @@ namespace OdeToFood.Controllers
 
         public ActionResult Index([Bind(Prefix = "id")] int restaurantId)
         {
-            var model = _context.Restaurants.Find(restaurantId);
+            var model = _context.Restaurants.FirstOrDefault();
+
             if (model==null)
             {
                 return NotFound();
