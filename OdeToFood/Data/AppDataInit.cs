@@ -6,44 +6,48 @@ using OdeToFood.Models;
 
 namespace OdeToFood.Data
 {
-	public class AppDataInit
-	{
-		public static void SeedRestaurant(ApplicationDbContext context)
-		{
-			if (!context.Restaurants.Any())
-			{
+    public class AppDataInit
+    {
+        public static void SeedRestaurant(ApplicationDbContext context)
+        {
+            if (!context.Restaurants.Any())
+            {
+                for (int i = 1; i < 1000; i++)
+                {
 
-				context.Restaurants.Add(
-					new Restaurant
-					{
-						Name = "Cinnamon Club",
-						City = "London",
-						Country = "UK",
-						Reviews = new List<RestaurantReview>()
+                    context.Restaurants.Add(
+                        new Restaurant
                         {
-							new RestaurantReview()
+                            Name = $"Cinnamon Club {i}",
+                            City = "London",
+                            Country = "UK",
+                            Reviews = new List<RestaurantReview>()
                             {
-								Rating = 10,
-								Body = "Superlahe"
+                            new RestaurantReview()
+                            {
+                                Rating = 10,
+                                Body = "Superlahe"
                             }
-                        }
-					});
-				context.Restaurants.Add(
-					new Restaurant
-					{
-						Name = "Marrakesh",
-						City = "D.C.",
-						Country = "USA",
-					});
-				context.Restaurants.Add(
-					new Restaurant
-					{
-						Name = "The House of Elliot",
-						City = "Ghent",
-						Country = "Belgium",
-					});
-				context.SaveChanges();
-			}
-		}
-	}
+                            }
+                        });
+                    context.Restaurants.Add(
+                        new Restaurant
+                        {
+                            Name = $"{i}Marrakesh",
+                            City = "D.C.",
+                            Country = "USA",
+                        });
+                    context.Restaurants.Add(
+                        new Restaurant
+                        {
+                            Name = $"The House {i}of Elliot",
+                            City = "Ghent",
+                            Country = "Belgium",
+                        });
+
+                }
+                context.SaveChanges();
+            }
+        }
+    }
 }
