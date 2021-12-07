@@ -65,7 +65,7 @@ namespace OdeToFood.Controllers
 				current.Body = review.Body;
 				current.Rating = review.Rating;
 				_context.SaveChanges();
-				return RedirectToAction(nameof(Index), new { id = current.RestaurantId });
+				return RedirectToAction(nameof(Index), new { id = current.RestaurantId });	
 			}
 			return View(review);
 
