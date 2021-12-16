@@ -20,11 +20,11 @@ namespace OdeToFood.Controllers
 			_context = context;
 		}
 		// GET: ReviewsController
-		public ActionResult Index([Bind(Prefix = "id")] int restaurantId)
+		public ActionResult Index([Bind(Prefix ="id")] int restaurantId)
 		{
 			var model = _context.Restaurants
 				.FirstOrDefault(r => r.Id == restaurantId);
-			if (model == null)
+			if (model==null)
 			{
 				return NotFound();
 			}
@@ -70,5 +70,36 @@ namespace OdeToFood.Controllers
 			}
 			return View(review);
 		}
+
+		// GET: Restaurants/Delete/5
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var review = await _context.Reviews
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if(review == null)
+			{
+				return NotFound();
+			}
+
+			return View(review);
+		}
+
+		// POST: Restaurants/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var review = await _context.Reviews.FindAsync(id);
+			_context.Reviews.Remove(review);
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
+
+
 	}
 }
