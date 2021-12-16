@@ -14,6 +14,7 @@ namespace OdeToFood.Controllers
 	public class ReviewsController : Controller
 	{
 		private readonly ApplicationDbContext _context;
+
 		public ReviewsController(ApplicationDbContext context)
 		{
 			_context = context;
@@ -29,13 +30,14 @@ namespace OdeToFood.Controllers
 			}
 			return View(model);
 		}
+
 		[HttpGet]
 		public ActionResult Create(int restaurantId)
 		{
 			return View();
 		}
 		[HttpPost]
-		public ActionResult Create(RestaurantReview review)
+		public ActionResult Create(int restaurantId, RestaurantReview review)
 		{
 			if (ModelState.IsValid)
 			{
@@ -60,15 +62,13 @@ namespace OdeToFood.Controllers
 			}
 			if (ModelState.IsValid)
 			{
-				_context.Entry(review).State = EntityState.Modified;
 				var current = _context.Reviews.Find(id);
 				current.Body = review.Body;
 				current.Rating = review.Rating;
 				_context.SaveChanges();
-				return RedirectToAction(nameof(Index), new { id = current.RestaurantId });	
+				return RedirectToAction(nameof(Index), new { id = current.RestaurantId });
 			}
 			return View(review);
-
 		}
 	}
 }
