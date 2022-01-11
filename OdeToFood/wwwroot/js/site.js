@@ -2,7 +2,6 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-
 $(function () {
 	let ajaxFormSubmit = function () {
 		const $form = $(this);
@@ -41,22 +40,17 @@ $(function () {
 			url: $a.attr("href"),
 			data: $("form").serialize(),
 			type: "get"
-
 		};
 
 		$.ajax(options).done(function (data) {
 			const target = $a.parents("div.pagedList").attr("data-otf-target");
 			$(target).replaceWith(data);
-
 		});
 		return false;
 	};
-	
+
 	$("form[data-otf-ajax='true']").submit(ajaxFormSubmit);
 	$("input[data-otf-autocomplete]").each(createAutocomplete);
+
 	$("main").on("click", ".pagedList a", getPage);
-	
 });
-
-
-

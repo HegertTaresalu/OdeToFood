@@ -10,10 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OdeToFood.Data;
+using OdeToFood.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 namespace OdeToFood
 {
 	public class Startup
@@ -22,21 +24,30 @@ namespace OdeToFood
 		{
 			Configuration = configuration;
 		}
+
 		public IConfiguration Configuration { get; }
+
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>
 							options
-							.UseLazyLoadingProxies()
-							.UseSqlServer(
-											Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging());
+								.UseLazyLoadingProxies()
+								.UseSqlServer(
+											Configuration
+											.GetConnectionString("DefaultConnection")
+											).EnableSensitiveDataLogging());
 			services.AddDatabaseDeveloperPageExceptionFilter();
 			services.AddUnobtrusiveAjax();
-			services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-							.AddEntityFrameworkStores<ApplicationDbContext>();
+
+			services.AddIdentity<UserProfile,AppRole>(options => options.SignIn.RequireConfirmedAccount = true)
+				.AddDefaultUI()
+				.AddDefaultTokenProviders()
+				.AddEntityFrameworkStores<ApplicationDbContext>();
+
 			services.AddControllersWithViews();
 		}
+
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
@@ -55,14 +66,17 @@ namespace OdeToFood
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseUnobtrusiveAjax();
+
 			app.UseRouting();
+
 			app.UseAuthentication();
 			app.UseAuthorization();
+
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute(
-									"Cuisine", "cuisine/{name?}",
-									new { controller = "Cuisine", action = "Search" }
+									"Cuisine","cuisine/{name?}",
+									new { controller = "Cuisine", action="Search" }
 				);
 				endpoints.MapControllerRoute(
 																	name: "default",
@@ -77,10 +91,14 @@ namespace OdeToFood
 				.ApplicationServices
 				.GetRequiredService<IServiceScopeFactory>()
 				.CreateScope();
+
+			using var userManager = serviceScope.ServiceProvider.GetService<UserManager<UserProfile>>();
+			using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
+
 			using var context = serviceScope
 				.ServiceProvider
 				.GetService<ApplicationDbContext>();
-			if (context == null)
+			if (context==null)
 			{
 				throw new ApplicationException("Problem in services. Can not initialize ApplicationDbContext");
 			}
@@ -94,11 +112,12 @@ namespace OdeToFood
 				}
 				catch (SqlException e)
 				{
-					if (e.Message.Contains("The login failed.")) { break; }
+					if(e.Message.Contains("The login failed.")) { break; }
 					System.Threading.Thread.Sleep(1000);
 				}
 			}
-			AppDataInit.SeedRestaurant(context);
+			AppDataInit.SeedIdentity(userManager, roleManager);
+			AppDataInit.SeedRestaurant(context);			
 		}
 	}
 }

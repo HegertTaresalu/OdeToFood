@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AspNetCore.Unobtrusive.Ajax;
+﻿using AspNetCore.Unobtrusive.Ajax;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OdeToFood.Data;
 using OdeToFood.Models;
@@ -10,18 +10,20 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
-using X.PagedList.Mvc;
+
 namespace OdeToFood.Controllers
 {
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
 		private ApplicationDbContext _context;
+
 		public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
 		{
 			_logger = logger;
 			_context = context;
 		}
+
 		public ActionResult Autocomplete(string term)
 		{
 			var model = _context.Restaurants
@@ -33,6 +35,7 @@ namespace OdeToFood.Controllers
 				});
 			return Json(model);
 		}
+
 		public IActionResult Index(string searchTerm = null, int page = 1)
 		{
 			var model = _context.Restaurants
@@ -47,8 +50,9 @@ namespace OdeToFood.Controllers
 					City = r.City,
 					Country = r.Country,
 					CountOfReviews = r.Reviews.Count
-				}).ToPagedList(page, 10);
+				}).ToPagedList(page,10);
 
+			
 			if (Request.IsAjaxRequest())
 			{
 				return PartialView("_Restaurants", model);
@@ -60,7 +64,7 @@ namespace OdeToFood.Controllers
 		{
 			var model = new AboutModel()
 			{
-				Name = "Hegert Taresalu",
+				Name = "Kristjan Kivikangur",
 				Location = "Tallinn"
 			};
 			return View(model);
@@ -69,12 +73,11 @@ namespace OdeToFood.Controllers
 		{
 			return View();
 		}
+
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
-
-
 	}
 }

@@ -2,22 +2,23 @@
 
 namespace OdeToFood.Data.Migrations
 {
-    public partial class AddReviewerName : Migration
+    public partial class AppRoles : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "ReviewerName",
-                table: "Reviews",
+                name: "Discriminator",
+                table: "AspNetRoles",
                 type: "nvarchar(max)",
-                nullable: true);
+                nullable: false,
+                defaultValue: "");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ReviewerName",
-                table: "Reviews");
+                name: "Discriminator",
+                table: "AspNetRoles");
         }
     }
 }
